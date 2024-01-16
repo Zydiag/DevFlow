@@ -53,6 +53,7 @@ const Question = ({ mongoUserId }: props) => {
         content: values.explanation,
         tags: values.tags,
         author: JSON.parse(mongoUserId),
+        path: pathname,
       });
       // navigate to home page
 
@@ -147,7 +148,7 @@ const Question = ({ mongoUserId }: props) => {
                       'undo redo | ' +
                       'codesample | bold italic forecolor | alignleft aligncenter ' +
                       'alignright alignjustify | bullist numlist ',
-                    content_style: 'body { font-family:Inter; font-size:16px }',
+                    content_style: 'body { font-family:sans; font-size:16px }',
                   }}
                 />
               </FormControl>

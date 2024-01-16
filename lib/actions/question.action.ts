@@ -2,12 +2,29 @@
 import Question from '@/database/question.model';
 import Tag from '@/database/tag.model';
 import { connectToDatabase } from '../mongoose';
+import { CreateQuestionParams, GetQuestionsParams } from './shared.action';
+import User from '@/database/user.model';
+import { revalidatePath } from 'next/cache';
 
-export async function createQuestion(params: any) {
+export async function getQuestions(params: GetQuestionsParams) {
   try {
     // connect to db
     connectToDatabase();
-    console.log('passed the connection');
+    const questions = await Question.find({})
+      .populate({ path: 'tags', model: Tag })
+      .populate({ path: 'author', model: User })
+      .sort({ createdAt: -1 });
+
+    return { questions };
+  } catch (error) {
+    console.log(error);
+    throw new Error('Failed to get questions');
+  }
+}
+
+export async function createQuestion(params: CreateQuestionParams) {
+  try {
+    connectToDatabase();
     const { title, content, tags, author, path } = params;
 
     const question = await Question.create({
@@ -17,7 +34,7 @@ export async function createQuestion(params: any) {
       author,
       // path
     });
-    console.log('question created', question);
+    // console.log('question created', question);
 
     const tagDocuments = [];
 
@@ -44,5 +61,7 @@ export async function createQuestion(params: any) {
     // create an interaction record for the user ask-question action
 
     // increment author reputation +5
+
+    revalidatePath(path);
   } catch (error) {}
 }
