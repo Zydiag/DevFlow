@@ -19,12 +19,20 @@ import { Input } from '@/components/ui/input';
 import { QuestionSchema } from '@/lib/validations';
 import { Badge } from '../ui/badge';
 import Image from 'next/image';
+import { createQuestion } from '@/lib/actions/question.action';
+import { usePathname, useRouter } from 'next/navigation';
 
 const type: any = 'create';
 
-const Question = () => {
+interface props {
+  mongoUserId: string;
+}
+
+const Question = ({ mongoUserId }: props) => {
   const editorRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const form = useForm<z.infer<typeof QuestionSchema>>({
     resolver: zodResolver(QuestionSchema),
@@ -34,13 +42,21 @@ const Question = () => {
       tags: [],
     },
   });
-  function onSubmit(values: z.infer<typeof QuestionSchema>) {
+  async function onSubmit(values: z.infer<typeof QuestionSchema>) {
     setIsSubmitting(true);
 
     try {
       // make an async call to api to create a question
       // contain all form data
+      await createQuestion({
+        title: values.title,
+        content: values.explanation,
+        tags: values.tags,
+        author: JSON.parse(mongoUserId),
+      });
       // navigate to home page
+
+      router.push('/');
     } catch (error) {
     } finally {
       setIsSubmitting(false);
@@ -119,6 +135,8 @@ const Question = () => {
                   apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
                   // @ts-ignore
                   onInit={(evt, editor) => (editorRef.current = editor)}
+                  onBlur={field.onBlur}
+                  onEditorChange={(content) => field.onChange(content)}
                   initialValue=""
                   init={{
                     height: 350,
