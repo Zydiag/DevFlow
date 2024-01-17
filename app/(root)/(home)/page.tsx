@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { HomePageFilters } from '@/constants/filters';
 import Link from 'next/link';
 import { getQuestions } from '@/lib/actions/question.action';
-import result from 'postcss/lib/result';
 
 export default async function Home() {
   const result = await getQuestions({});
