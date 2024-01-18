@@ -84,6 +84,7 @@ export async function POST(req: Request) {
         last_name,
       } = evt.data;
       // Create a new user in your database
+      console.log('updating user');
       const mongoUser = await updateUser({
         clerkId: id,
         updateData: {
@@ -94,6 +95,7 @@ export async function POST(req: Request) {
         },
         path: `/profile/${id}`,
       });
+      console.log('updated user', mongoUser);
       return NextResponse.json({ message: 'OK', user: mongoUser });
     }
 
