@@ -4,6 +4,7 @@ import { connectToDatabase } from '../mongoose';
 import {
   CreateUserParams,
   DeleteUserParams,
+  GetAllUsersParams,
   GetUserByIdParams,
   UpdateUserParams,
 } from './shared.action';
@@ -22,6 +23,20 @@ export async function getUserById(params: GetUserByIdParams) {
   } catch (error) {
     console.log(error);
     throw new Error('Failed to get user');
+  }
+}
+
+export async function getAllUsers(params: GetAllUsersParams) {
+  try {
+    connectToDatabase();
+    // const { page = 1, pageSize = 20, filter, searchQuery } = params;
+
+    const users = await User.find({}).sort({ createdAt: -1 });
+
+    return { users };
+  } catch (error) {
+    console.log(error);
+    throw new Error('Failed to get users');
   }
 }
 
