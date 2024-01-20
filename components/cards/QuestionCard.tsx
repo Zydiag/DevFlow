@@ -29,7 +29,7 @@ const QuestionCard = ({
   answers,
   createdAt,
 }: Props) => {
-  const showActionButtons = clerkId && clerkId === author.clerkId
+  const showActionButtons = clerkId && clerkId === author.clerkId;
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
       <div className="flex flex-col-reverse items-start justify-between sm:flex-row">

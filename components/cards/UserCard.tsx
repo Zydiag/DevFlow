@@ -30,7 +30,7 @@ const UserCard = async ({ user }: Props) => {
           alt="user Profile Pic"
           width={100}
           height={100}
-          className="rounded-full"
+          className="h-[100px] w-[100px] rounded-full object-cover"
         />
         <div className="mt-4 text-center ">
           <h3 className="h3-bold text-dark200_light900 line-clamp-1 ">

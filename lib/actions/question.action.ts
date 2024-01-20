@@ -14,15 +14,43 @@ import User from '@/database/user.model';
 import { revalidatePath } from 'next/cache';
 import Answer from '@/database/answer.model';
 import Interaction from '@/database/interaction.model';
+import { FilterQuery } from 'mongoose';
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {
     // connect to db
     connectToDatabase();
-    const questions = await Question.find({})
+
+    const { searchQuery, filter } = params;
+    const query: FilterQuery<typeof Question> = {};
+
+    if (searchQuery) {
+      query.$or = [
+        { title: { $regex: new RegExp(searchQuery, 'i') } },
+        { content: { $regex: new RegExp(searchQuery, 'i') } },
+      ];
+    }
+
+    let sortOptions = {};
+    switch (filter) {
+      case 'newest':
+        sortOptions = { createdAt: -1 };
+        break;
+      case 'frequent':
+        sortOptions = { views: -1 };
+        break;
+      case 'unanswered':
+        query.answers = { $size: 0 };
+        break;
+      case 'recomended':
+        break;
+      default:
+        break;
+    }
+    const questions = await Question.find(query)
       .populate({ path: 'tags', model: Tag })
       .populate({ path: 'author', model: User })
-      .sort({ createdAt: -1 });
+      .sort(sortOptions);
 
     return { questions };
   } catch (error) {
@@ -190,5 +218,19 @@ export async function editQuestion(params: EditQuestionParams) {
     revalidatePath(path);
   } catch (error) {
     console.error(error);
+  }
+}
+
+export async function getHotQuestions() {
+  try {
+    connectToDatabase();
+    const hotQuestions = await Question.find({})
+      .sort({ views: -1, upvotes: -1 }) // descending order
+      .limit(5);
+
+    return hotQuestions;
+  } catch (error) {
+    console.log(error);
+    throw new Error('Failed to get hot questions');
   }
 }

@@ -22,9 +22,9 @@ const Page = async ({ params, searchParams }: URLProps) => {
           <Image
             src={userInfo?.user.picture}
             alt="profile pic"
-            width={140}
-            height={140}
-            className="rounded-full object-cover"
+            width="140"
+            height="140"
+            className="h-[140px] w-[140px] rounded-full object-cover"
           />
           <div className="mt-3">
             <h2 className="h2-bold text-dark100_light900">
