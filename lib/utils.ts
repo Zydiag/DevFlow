@@ -48,3 +48,26 @@ export function formatNumber(num: number): string {
     return num.toString();
   }
 }
+
+// function to format dates
+export function getJoinedDate(inputDate: Date): string {
+  const monthNames: string[] = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  const month = monthNames[inputDate.getMonth()];
+  const year = inputDate.getFullYear();
+
+  return `${month} ${year}`;
+}
