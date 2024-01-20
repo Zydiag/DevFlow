@@ -8,12 +8,13 @@ import { HomePageFilters } from '@/constants/filters';
 import Link from 'next/link';
 import { getQuestions } from '@/lib/actions/question.action';
 import { SearchParamsProps } from '@/types';
+import Pagination from '@/components/shared/Pagination';
 
 export default async function Home({ searchParams }: SearchParamsProps) {
   const result = await getQuestions({
-    page: 1,
     searchQuery: searchParams.q,
     filter: searchParams.filter,
+    page: searchParams.page ? +searchParams.page : 1,
   });
 
   // console.log(result.questions);
@@ -67,6 +68,10 @@ export default async function Home({ searchParams }: SearchParamsProps) {
           />
         )}
       </div>
+      <Pagination
+        pageNumber={searchParams.page ? +searchParams.page : 1}
+        isNext={result.isNext}
+      />
     </>
   );
 }
