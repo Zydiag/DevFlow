@@ -18,6 +18,7 @@ interface Props {
 const RenderTag = dynamic(() => import('../shared/RenderTag'), { ssr: false });
 
 const UserCard = async ({ user }: Props) => {
+  // todo fix interacted tag
   const interactedTags = await getTopInteractedTags({ userId: user._id });
   return (
     <Link

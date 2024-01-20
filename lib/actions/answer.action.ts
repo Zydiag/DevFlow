@@ -11,6 +11,7 @@ import {
 import Question from '@/database/question.model';
 import { revalidatePath } from 'next/cache';
 import Interaction from '@/database/interaction.model';
+import User from '@/database/user.model';
 
 export async function createAnswer(params: CreateAnswerParams) {
   try {
@@ -18,14 +19,21 @@ export async function createAnswer(params: CreateAnswerParams) {
     const { content, author, question, path } = params;
     const answer = await Answer.create({ content, author, question });
 
-    await Question.findByIdAndUpdate(question, {
+    const questionObj = await Question.findByIdAndUpdate(question, {
       $push: {
         answers: answer._id,
       },
     });
-
-    // TODO: add interaction
-
+    await Interaction.create({
+      user: author,
+      action: 'answer',
+      question,
+      answer: answer._id,
+      tags: questionObj.tags,
+    });
+    await User.findByIdAndUpdate(author, {
+      $inc: { reputation: 10 },
+    });
     revalidatePath(path);
     return answer;
   } catch (error) {
@@ -96,6 +104,13 @@ export async function upVoteAnswer(params: AnswerVoteParams) {
     });
     if (!answer) throw new Error('Question not found');
     // increment author reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasupVoted ? -2 : 2 },
+    });
+    // answer author
+    await User.findByIdAndUpdate(answer.author, {
+      $inc: { reputation: hasupVoted ? -10 : 10 },
+    });
     revalidatePath(path);
   } catch (error) {
     console.log(error);
@@ -127,6 +142,13 @@ export async function downVoteAnswer(params: AnswerVoteParams) {
     });
     if (!answer) throw new Error('Question not found');
     // increment author reputation
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasdownVoted ? -2 : 2 },
+    });
+    // answer author
+    await User.findByIdAndUpdate(answer.author, {
+      $inc: { reputation: hasdownVoted ? -10 : 10 },
+    });
     revalidatePath(path);
   } catch (error) {
     console.log(error);

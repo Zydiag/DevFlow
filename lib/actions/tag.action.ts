@@ -21,6 +21,7 @@ export async function getTopInteractedTags(params: GetTopInteractedTagsParams) {
 
     // interactions
 
+    // todo fix interacted tag
     return [
       { _id: '1', name: 'react', totalQuestions: 5 },
       { _id: '2', name: 'nextjs', totalQuestions: 5 },
