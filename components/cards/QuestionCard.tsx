@@ -7,7 +7,7 @@ import { SignedIn } from '@clerk/nextjs';
 import EditDeleteActions from '../shared/EditDeleteActions';
 
 type Props = {
-  clerkId?: string;
+  clerkId?: string | null;
   _id: number;
   title: string;
   tags: { _id: string; name: string }[];
