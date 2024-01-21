@@ -42,6 +42,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@tinymce/tinymce-react": "^4.3.2",
     "@types/node": "^20",
     "@types/prismjs": "^1.26.3",

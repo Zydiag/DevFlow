@@ -17,6 +17,7 @@ import { Button } from '../ui/button';
 import Image from 'next/image';
 import { createAnswer } from '@/lib/actions/answer.action';
 import { usePathname } from 'next/navigation';
+import { generateAIAnswer } from '@/lib/actions/ai.action';
 
 interface Props {
   question: string;
@@ -27,6 +28,7 @@ interface Props {
 const Answer = ({ question, questionId, authorId }: Props) => {
   const pathname = usePathname();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const { mode } = useTheme();
   const form = useForm<z.infer<typeof AnswerSchema>>({
     resolver: zodResolver(AnswerSchema),
@@ -56,6 +58,27 @@ const Answer = ({ question, questionId, authorId }: Props) => {
       setIsSubmitting(false);
     }
   };
+  const handleGenerateAIAnswer = async () => {
+    if(!question) return;
+    
+    setIsGeneratingAI(true);
+    
+    try {
+      const { response } = await generateAIAnswer(question);
+      
+      if (editorRef.current) {
+        const editor = editorRef.current as any;
+        editor.setContent(response);
+      }
+      
+      // Set the form value
+      form.setValue('answer', response);
+    } catch (error) {
+      console.error('Error generating AI answer:', error);
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
   const editorRef = useRef(null);
   return (
     <div>
@@ -65,16 +88,23 @@ const Answer = ({ question, questionId, authorId }: Props) => {
         </h4>
         <Button
           className="btn light-border-2 gap-1.5  rounded-md  px-4 py-2.5 text-primary-500 shadow-none dark:text-primary-500"
-          onClick={() => {}}
+          onClick={handleGenerateAIAnswer}
+          disabled={isGeneratingAI}
         >
-          <Image
-            src="/assets/icons/stars.svg"
-            alt="stars"
-            width={12}
-            height={12}
-            className="object-contain"
-          />
-          Generate an AI Answer
+          {isGeneratingAI ? (
+            <>Generating...</>
+          ) : (
+            <>
+              <Image
+                src="/assets/icons/stars.svg"
+                alt="stars"
+                width={12}
+                height={12}
+                className="object-contain"
+              />
+              Generate an AI Answer
+            </>
+          )}
         </Button>
       </div>
       <Form {...form}>
