@@ -3,19 +3,23 @@ import React from 'react';
 import RenderTag from '../shared/RenderTag';
 import Metric from '../shared/Metric';
 import { formatNumber, getTimeStamp } from '@/lib/utils';
+import { SignedIn } from '@clerk/nextjs';
+import EditDeleteActions from '../shared/EditDeleteActions';
 
 type Props = {
+  clerkId?: string | null;
   _id: number;
   title: string;
   tags: { _id: string; name: string }[];
-  author: { _id: string; name: string; picture: string };
-  upvotes: number;
+  author: { _id: string; name: string; picture: string; clerkId: string };
+  upvotes: string[];
   views: number;
   answers: string;
   createdAt: Date;
 };
 
 const QuestionCard = ({
+  clerkId,
   _id,
   title,
   tags,
@@ -25,6 +29,7 @@ const QuestionCard = ({
   answers,
   createdAt,
 }: Props) => {
+  const showActionButtons = clerkId && clerkId === author.clerkId;
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
       <div className="flex flex-col-reverse items-start justify-between sm:flex-row">
@@ -39,6 +44,11 @@ const QuestionCard = ({
           </Link>
         </div>
 
+        <SignedIn>
+          {showActionButtons && (
+            <EditDeleteActions type="Question" itemId={JSON.stringify(_id)} />
+          )}
+        </SignedIn>
         {/* if signed in edit button */}
       </div>
 
@@ -58,28 +68,30 @@ const QuestionCard = ({
           isAuthor={true}
           textStyles="body-medium text-dark400_light700"
         />
-        <Metric
-          imgUrl="/assets/icons/like.svg"
-          alt="upvotes"
-          value={formatNumber(upvotes)}
-          title=" Votes"
-          textStyles="small-medium text-dark400_light800"
-        />
+        <div className="flex items-center gap-3 max-sm:flex-wrap  max-sm:justify-start">
+          <Metric
+            imgUrl="/assets/icons/like.svg"
+            alt="upvotes"
+            value={formatNumber(upvotes.length)}
+            title=" Votes"
+            textStyles="small-medium text-dark400_light800"
+          />
 
-        <Metric
-          imgUrl="/assets/icons/message.svg"
-          alt="message"
-          value={answers}
-          title=" Answers"
-          textStyles="small-medium text-dark400_light800"
-        />
-        <Metric
-          imgUrl="/assets/icons/eye.svg"
-          alt="views"
-          value={formatNumber(views)}
-          title=" Views"
-          textStyles="small-medium text-dark400_light800"
-        />
+          <Metric
+            imgUrl="/assets/icons/message.svg"
+            alt="message"
+            value={answers.length}
+            title=" Answers"
+            textStyles="small-medium text-dark400_light800"
+          />
+          <Metric
+            imgUrl="/assets/icons/eye.svg"
+            alt="views"
+            value={formatNumber(views)}
+            title=" Views"
+            textStyles="small-medium text-dark400_light800"
+          />
+        </div>
       </div>
     </div>
   );
